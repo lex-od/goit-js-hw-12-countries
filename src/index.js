@@ -1,20 +1,19 @@
 import './styles.css';
 import fetchCountries from './js/fetchCountries';
+import countryListTmpl from './data/country-list.hbs';
+import countryCardTmpl from './data/country-card.hbs';
+
 import debounce from 'lodash.debounce';
-import { error, defaults as pnDefaults } from '@pnotify/core';
+import { error as pnError, defaults as pnDefaults } from '@pnotify/core';
 import '@pnotify/core/dist/PNotify.css';
 import '@pnotify/core/dist/BrightTheme.css';
-import countryListTmpl from './data/country-list.hbs';
 
 pnDefaults.delay = 3000;
-
 const MAX_DISPLAY_COUNTRIES = 10;
 
 const refs = {
   countryInput: document.querySelector('#country-input'),
-  countryListWr: document.querySelector('#country-list-wrapper'),
-  countryList: document.querySelector('#country-list-wrapper > ul'),
-  countryCardWr: document.querySelector('#country-card-wrapper'),
+  contentWrapper: document.querySelector('#content-wrapper'),
 };
 
 refs.countryInput.addEventListener('input', debounce(onCounryInput, 500));
@@ -24,22 +23,17 @@ function onCounryInput(e) {
   if (!country) {
     return;
   }
+
   fetchCountries(country)
     .then(countries => {
       if (countries.length > MAX_DISPLAY_COUNTRIES) {
-        error(
+        pnError(
           'Слишком большое количество результатов. Пожалуйста, введите более специфичный запрос!',
         );
-
-        console.log('c > 10');
       } else if (countries.length > 1) {
-        refs.countryList.innerHTML = countryListTmpl(countries);
-
-        console.log('c > 1');
-      } else if ((countries.length = 1)) {
-        //
-
-        console.log('c = 1');
+        refs.contentWrapper.innerHTML = countryListTmpl(countries);
+      } else if (countries.length === 1) {
+        refs.contentWrapper.innerHTML = countryCardTmpl(countries[0]);
       }
     })
     .catch(console.error);
