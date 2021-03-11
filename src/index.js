@@ -9,7 +9,7 @@ import '@pnotify/core/dist/PNotify.css';
 import '@pnotify/core/dist/BrightTheme.css';
 
 pnDefaults.delay = 3000;
-const MAX_DISPLAY_COUNTRIES = 10;
+const MAX_DISPLAY_RESULTS = 10;
 
 const refs = {
   countryInput: document.querySelector('#country-input'),
@@ -21,20 +21,39 @@ refs.countryInput.addEventListener('input', debounce(onCounryInput, 500));
 function onCounryInput(e) {
   const country = e.target.value;
   if (!country) {
+    clearContent();
     return;
   }
 
   fetchCountries(country)
     .then(countries => {
-      if (countries.length > MAX_DISPLAY_COUNTRIES) {
-        pnError(
-          'Слишком большое количество результатов. Пожалуйста, введите более специфичный запрос!',
-        );
+      clearContent();
+
+      if (countries.length > MAX_DISPLAY_RESULTS) {
+        notifyExcessResults();
       } else if (countries.length > 1) {
-        refs.contentWrapper.innerHTML = countryListTmpl(countries);
+        renderCountryList(countries);
       } else if (countries.length === 1) {
-        refs.contentWrapper.innerHTML = countryCardTmpl(countries[0]);
+        renderCountryCard(countries[0]);
       }
     })
     .catch(console.error);
+}
+
+function renderCountryList(countries) {
+  refs.contentWrapper.innerHTML = countryListTmpl(countries);
+}
+
+function renderCountryCard(country) {
+  refs.contentWrapper.innerHTML = countryCardTmpl(country);
+}
+
+function clearContent() {
+  refs.contentWrapper.innerHTML = '';
+}
+
+function notifyExcessResults() {
+  pnError(
+    'Слишком большое количество результатов. Пожалуйста, введите более специфичный запрос!',
+  );
 }
