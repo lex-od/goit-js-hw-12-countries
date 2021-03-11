@@ -1,11 +1,11 @@
 export default function fetchCountries(searchQuery) {
-  return fetch(`https://restcountries.eu/rest/v2/name/${searchQuery}`)
-    .then(r => {
-      if (!r.ok) {
+  return fetch(`https://restcountries.eu/rest/v2/name/${searchQuery}`).then(
+    response => {
+      if (!response.ok) {
         throw 'Ошибка получения данных!';
       }
 
-      return r.json();
-    })
-    .catch(console.error);
+      return response.json();
+    },
+  );
 }
