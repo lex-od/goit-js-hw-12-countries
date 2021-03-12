@@ -37,7 +37,7 @@ function onCounryInput(e) {
         renderCountryCard(countries[0]);
       }
     })
-    .catch(console.error);
+    .catch(handleError);
 }
 
 function renderCountryList(countries) {
@@ -56,4 +56,10 @@ function notifyExcessResults() {
   pnError(
     'Слишком большое количество результатов. Пожалуйста, введите более специфичный запрос!',
   );
+}
+
+function handleError(e) {
+  console.error(e);
+
+  clearContent();
 }
